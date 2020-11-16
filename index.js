@@ -7,23 +7,44 @@
 
 //настраиваем сервера
 const http = require('http');
+const fs = require('fs');
+const path = require('path');
 
 //методу createSever передается функция - handler, которая будет вызываться, когда будут идти запросы на сервер
 //принимает 2 параметра запрос и ответ
 const server = http.createServer((req, res) => {
 if (req.method === "GET") {
     res.writeHead(200, {
-        'Content-Type': 'text/html'
+        'Content-Type': 'text/html; charset=utf-8'
     })
 
-    // отправляем запрос на корневой url /
-    res.end(`
-        <h1>Form</h1>
-        <form method="post" action="/">
-        <input name="title" type="text"/>
-        <button type="submit">send</button>
-        </form>
-    `)
+    //по url определяем, какую view отдать (корневую - / или /about)
+    if (req.url === '/') {
+        fs.readFile(
+            path.join(__dirname, 'views', 'index.html'),
+            'utf-8',
+            (err, content) => {
+                if (err) {
+                    throw err
+                }
+
+                res.end(content)
+            }
+        )
+    } else if(req.url === '/about') {
+        fs.readFile(
+            path.join(__dirname, 'views', 'about.html'),
+            'utf-8',
+            (err, content) => {
+                if (err) {
+                    throw err
+                }
+
+                res.end(content)
+            }
+        )
+
+    }
 } else if (req.method === 'POST') {
     const body = []
 
