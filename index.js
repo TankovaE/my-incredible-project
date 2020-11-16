@@ -11,15 +11,45 @@ const http = require('http');
 //методу createSever передается функция - handler, которая будет вызываться, когда будут идти запросы на сервер
 //принимает 2 параметра запрос и ответ
 const server = http.createServer((req, res) => {
-    console.log(req.url)
+if (req.method === "GET") {
+    res.writeHead(200, {
+        'Content-Type': 'text/html'
+    })
 
-    //передаем контент (на http://localhost:3000/ смотрим результат)
-    res.write('<h1>Hello from NodeJS</h1>');
-    res.write('<h2>Hello from NodeJS</h2>');
-    res.write('<h3>Hello from NodeJS</h3>');
-    //закрываем процесс, вызывается в конце
-    //этот метод тоже принимает контент
-    res.end('<div style="background: red; width: 200px; height: 200px;">test</div>')
+    // отправляем запрос на корневой url /
+    res.end(`
+        <h1>Form</h1>
+        <form method="post" action="/">
+        <input name="title" type="text"/>
+        <button type="submit">send</button>
+        </form>
+    `)
+} else if (req.method === 'POST') {
+    const body = []
+
+    //прописываем хедер заголовок для ответа, указываем кодировку, для правильного отображения кириллицы
+    res.writeHead(200, {
+        'Content-Type': 'text/html; charset=utf-8'
+    })
+
+    //слушаем событие data
+    req.on('data', data => {
+        //Данные приходят в формате Buffer (разделенные на чанки)
+        //для оптимизации процесса (полезно, когда передаваемые данные очень большие)
+        body.push(Buffer.from(data))
+    });
+
+    //слушаем событие, когда все данные дошли (end)
+    req.on('end', () => {
+        //парсим ответ title=123
+       const message = body.toString().split('=')[1]
+    
+       //завершаем и отдаем ответ
+       res.end(`
+            <h1>Ваше сообщение: ${message}</h1>
+        `)
+    })
+}
 });
 
 //запускаем сервер, передаем порт и коллбек функцию, которая будет вызвана тогда, когда сервер будет запущен
