@@ -38,7 +38,11 @@ app.get('/', (req, res, next) => {
 });
 
 app.get('/about', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'about.html'))
+    //так мы рендерим страницы без hbs
+    // res.sendFile(path.join(__dirname, 'views', 'about.html'))
+
+    //так мы рендерим страницы с движком hbs
+    res.render('about');
 });
 
 
