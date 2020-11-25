@@ -39,16 +39,28 @@ app.get('/', (req, res, next) => {
     // res.sendFile(path.join(__dirname, 'views', 'index.html'))
 
     //так мы рендерим страницы с движком hbs
-    res.render('index');
+    //метод render вторым параметром принимает параметры для страницы
+    res.render('index', {
+        //имя можно выбрать любое
+        title: 'Main page',
+        isHome: true,
+    });
 });
 
-app.get('/about', (req, res) => {
-    //так мы рендерим страницы без hbs
-    // res.sendFile(path.join(__dirname, 'views', 'about.html'))
-
-    //так мы рендерим страницы с движком hbs
-    res.render('about');
+app.get('/add', (req, res) => {
+    res.render('add', {
+        title: 'Add course',
+        isAdd: true
+    });
 });
+
+app.get('/courses', (req, res) => {
+    res.render('courses', {
+        title: 'Courses', 
+        isCourses: true,
+    });
+});
+
 
 
 const PORT = process.env.PORT || 3000;
