@@ -67,6 +67,32 @@ class Course {
 
        return courses.find(c => c.id === id);
     }
+
+    static async update(course) {
+        const courses = await Course.getAll();
+
+        //ищем index редактируемого курса по id
+        const idx = courses.findIndex(c => c.id === course.id);
+
+        //обновляем его данные
+        courses[idx] = course;
+
+        // записываем в базу
+        return new Promise ((resolve, reject) => {
+            fs.writeFile(
+                path.join(__dirname, '..', 'data', 'courses.json'),
+                JSON.stringify(courses),
+                (err) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve()
+                    }
+                }
+        
+            )
+        });
+    }
 }
 
 module.exports = Course;

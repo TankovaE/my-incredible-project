@@ -15,6 +15,8 @@
             </div>
             <div class="card-action">
                 <a href="/courses/{{id}}" target="_blank">Open course</a>
+                {{!-- query параметром allow=true мы разрешаем редактирование курса, а читать мы его будем в routes/courses.js --}}
+                <a href="/courses/{{id}}/edit?allow=true">Edit course</a>
             </div>
         </div>
     </div>
