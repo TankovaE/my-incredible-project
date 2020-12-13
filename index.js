@@ -3,6 +3,7 @@ const path = require('path');
 //подключаем шаблонизатор
 const exphbs = require('express-handlebars');
 const homeRoutes = require('./routes/home');
+const cartRoutes = require('./routes/cart');
 const addRoutes = require('./routes/add');
 const coursesRoutes = require('./routes/courses');
 
@@ -42,6 +43,7 @@ app.use(express.urlencoded({extended: true}))
 app.use('/', homeRoutes)
 app.use('/add', addRoutes)
 app.use('/courses', coursesRoutes)
+app.use('/cart', cartRoutes)
 
 
 //базовый метод который позволяет обрабатывать различные запросы
