@@ -22,4 +22,12 @@ router.get('/', async (req, res) => {
     })
 })
 
+router.delete('/remove/:id', async (req, res) => {
+    // берем из параметров id и по нему удаляем с помощью метода класса Cart курс
+    const cart = await Cart.remove(req.params.id);
+    
+    // отвечаем клиенту, что все ок и отдаем обновленную корзину
+    res.status(200).json(cart);
+})
+
 module.exports = router;

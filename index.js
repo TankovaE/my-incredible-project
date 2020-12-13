@@ -32,7 +32,7 @@ app.set('views', 'views');
 //use позволяет добавлять мидлвейры (доп функциональность) для нашего приложения
 //указываем, что папка public является публичной (статичной),
 //в ней мы храним статичные объект, например, картинки или стили css
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 //нужно для обработки запроса, в том числе получение body запроса
 app.use(express.urlencoded({extended: true}))
