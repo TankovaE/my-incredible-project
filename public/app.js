@@ -1,9 +1,12 @@
+const toCurrency = price => {
+    return new Intl.NumberFormat('ru-RU', {currency: 'rub', style: 'currency'}).format(price);
+}
 
 // клиентский js
 // здесь мы форматируем цену, чтобы она вглядела красиво
 document.querySelectorAll('.price').forEach(node => {
     console.log(node.textContent);
-    node.textContent = new Intl.NumberFormat('ru-RU', {currency: 'rub', style: 'currency'}).format(node.textContent);
+    node.textContent = toCurrency(node.textContent);
 })
 
 const $cart = document.querySelector('#cart');
@@ -16,8 +19,23 @@ if ($cart) {
             fetch(`/cart/remove/${id}`, {
                 method: 'delete',
                 //метод fetch возвращает промис
-            }).then(res => res.json()).then(cart => {
-                console.log(cart)
+            }).then(res => res.json())
+              .then(cart => {
+                if (cart.courses.length) {
+                    const html = cart.courses.map(c => {
+                        return `
+                        <tr>
+                            <td>${c.title}</td>
+                            <td>${c.count}</td>
+                            <td><button class="btn btn-small js-remove" data-id="${c.id}">delete</button></td>
+                        </tr>
+                        `
+                    }).join('');
+                    $cart.querySelector('tbody').innerHTML = html;
+                    $cart.querySelector('.price').textContent = toCurrency(cart.price);
+                } else {
+                    $cart.innerHTML = '<p>Cart is empty</p>'
+                }
             })
         }
     })
