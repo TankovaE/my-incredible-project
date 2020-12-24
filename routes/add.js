@@ -14,10 +14,31 @@ router.get('/', (req, res) => {
 
 })
 
-router.post('/', async (req, res)=>{
-    const course = new Course(req.body.title, req.body.price, req.body.image);
+// без mongodb
+// router.post('/', async (req, res)=>{
+//     const course = new Course(req.body.title, req.body.price, req.body.image);
 
-    await course.save();
+//     await course.save();
+
+//     res.redirect('/courses')
+// })
+
+//c mongodb
+router.post('/', async (req, res) => {
+    const course = new Course({
+        title: req.body.title,
+        price: req.body.price,
+        image: req.body.image
+    })
+
+    // save идет в реальную базу данных и сохраняет данную модель в определенной коллекции
+    try {
+        await course.save();
+        res.redirect('/courses')
+    } catch (e) {
+        console.log(e);
+    }
+    
 
     res.redirect('/courses')
 })

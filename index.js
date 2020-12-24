@@ -86,11 +86,11 @@ const PORT = process.env.PORT || 3000;
 
 async function start() {
     try {
-        const url = 'mongodb+srv://eitnkv:<OukxfbRJ3BkUfn4A>@cluster0.vdlvu.mongodb.net/<dbname>?retryWrites=true&w=majority';
+        const db = 'mongodb+srv://eitnkv:yKyonP8JZCOxEmye@cluster0.vdlvu.mongodb.net/shop';
 
         //обращаемся к пакету mongoose для того, чтобы подключиться к базе данных с помощью connect
         // useNewUrlParser нужен, чтобы не было разных ворнингов
-        await mongoose.connect(url, {useNewUrlParser: true});
+        await mongoose.connect(db, {useNewUrlParser: true, useUnifiedTopology: true});
     
         //на момент заруска приложения будет готова база данных
         app.listen(PORT, () => {
