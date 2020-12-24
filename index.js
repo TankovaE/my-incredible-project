@@ -6,6 +6,7 @@ const homeRoutes = require('./routes/home');
 const cartRoutes = require('./routes/cart');
 const addRoutes = require('./routes/add');
 const coursesRoutes = require('./routes/courses');
+const mongoose = require('mongoose');
 
 
 //аналог объекта server
@@ -80,6 +81,25 @@ app.use('/cart', cartRoutes)
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`)
-})
+
+
+
+async function start() {
+    try {
+        const url = 'mongodb+srv://eitnkv:<OukxfbRJ3BkUfn4A>@cluster0.vdlvu.mongodb.net/<dbname>?retryWrites=true&w=majority';
+
+        //обращаемся к пакету mongoose для того, чтобы подключиться к базе данных с помощью connect
+        // useNewUrlParser нужен, чтобы не было разных ворнингов
+        await mongoose.connect(url, {useNewUrlParser: true});
+    
+        //на момент заруска приложения будет готова база данных
+        app.listen(PORT, () => {
+            console.log(`Server is running on port ${PORT}`)
+        });
+    } catch (e) {
+        console.log(e)
+    }
+}
+
+start();
+
