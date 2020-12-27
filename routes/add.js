@@ -34,13 +34,14 @@ router.post('/', async (req, res) => {
     // save идет в реальную базу данных и сохраняет данную модель в определенной коллекции
     try {
         await course.save();
-        res.redirect('/courses')
     } catch (e) {
         console.log(e);
+    } finally {
+        res.redirect('/courses')
     }
     
 
-    res.redirect('/courses')
+
 })
 
 module.exports = router;

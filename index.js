@@ -18,7 +18,11 @@ const hbs = exphbs.create({
     //смотрит в папку с зарезервированным именем layouts
     defaultLayout: 'main',
     //сокращенное название модуля, для уоббства
-    extname: 'hbs'
+    extname: 'hbs',
+    runtimeOptions: {
+        allowProtoPropertiesByDefault: true,
+        allowProtoMethodsByDefault: true
+      }
 });
 
 //для того чтобы зарегистрировать данный модуль как движок для рендеринга html страниц
@@ -90,7 +94,7 @@ async function start() {
 
         //обращаемся к пакету mongoose для того, чтобы подключиться к базе данных с помощью connect
         // useNewUrlParser нужен, чтобы не было разных ворнингов
-        await mongoose.connect(db, {useNewUrlParser: true, useUnifiedTopology: true});
+        await mongoose.connect(db, {useNewUrlParser: true, useFindAndModify: false, useUnifiedTopology: true});
     
         //на момент заруска приложения будет готова база данных
         app.listen(PORT, () => {
