@@ -7,6 +7,7 @@ const cartRoutes = require('./routes/cart');
 const addRoutes = require('./routes/add');
 const coursesRoutes = require('./routes/courses');
 const mongoose = require('mongoose');
+const User = require('./models/user');
 
 
 //аналог объекта server
@@ -33,6 +34,20 @@ app.set('view engine', 'hbs');
 //указывем, где хранятся шаблоны
 //параметры - название и папка
 app.set('views', 'views');
+
+
+// пишем свой middleware для работы с user
+// next позволяет продолжить выполнение цепочки мидлвеиров
+// если мы его не вызовем, работа приложения остановится на нем
+app.use(async (req, res, next) => {
+   try { // хотим, чтобы с каждым запросом уходил пользователь
+        const user = await User.findById('5fe8cb422cce6422f4b59419');
+        req.user = user;
+        next();
+    } catch (e) {
+        console.log(e);
+    }
+})
 
 //use позволяет добавлять мидлвейры (доп функциональность) для нашего приложения
 //указываем, что папка public является публичной (статичной),
@@ -95,6 +110,20 @@ async function start() {
         //обращаемся к пакету mongoose для того, чтобы подключиться к базе данных с помощью connect
         // useNewUrlParser нужен, чтобы не было разных ворнингов
         await mongoose.connect(db, {useNewUrlParser: true, useFindAndModify: false, useUnifiedTopology: true});
+
+        // если есть хоть 1 элемент, метод findOne его вернет
+        const candidate = await User.findOne();
+
+        if (!candidate) {
+            const user = new User({
+                email: 'eitnkv@gmail.com',
+                name: 'Ekaterina',
+                cart: {
+                    items: []
+                }
+            })
+            await user.save();
+        }
     
         //на момент заруска приложения будет готова база данных
         app.listen(PORT, () => {

@@ -11,7 +11,15 @@ router.get('/', async (req, res) => {
 
     // с mongodb
     // find отдает все данные если ему не передавать параметры
+    // populate позволяет получить не просто userId, который есть у каждого курса в mongodb
+    // а целиком объект юзера, благодаря связке ref в моделях
+    // select позволяет достать только определенные поля, а не все
     const courses = await Course.find({})
+        .populate('userId')
+        // .select('price image name');
+
+    console.log(courses);
+
     res.render('courses', {
         title: 'Courses', 
         isCourses: true,
@@ -28,7 +36,7 @@ router.get('/:id', async (req, res) => {
     // const course = await Course.getById(req.params.id);
 
     // c mongodb
-    const course = await Course.findById(req.params.id)
+    const course = await Course.findById(req.params.id);
 
     // рендерим страницу course
     res.render('course', {

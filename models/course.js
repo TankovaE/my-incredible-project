@@ -10,6 +10,10 @@ const course = new Schema({
     title: { type: String, required: true },
     price: { type: String, required: true },
     image: String,
+    userId: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+    }
     // поле id mongoose будет автоматически создавать при создании новой модели
 })
 
