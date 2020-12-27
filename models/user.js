@@ -30,4 +30,28 @@ const userSchema = new Schema({
     }
 });
 
+// определяем свой метод, который вынесет логику в объект пользователя
+// не используем здесь стрелочную функцию, так как у нее нет this
+userSchema.methods.addToCart = function(course) {
+    const items = [...this.cart.items]; // updated items
+    const idx = items.findIndex(c => {
+        // toString нужен так как тип у id объект ObjectId
+        return c.courseId.toString() === course._id.toString();
+    });
+
+    // проверяем, есть ли в корзине такой курс, чтобы понять, нужно его добавить или увеличить count
+    if (idx >= 0) {
+        items[idx].count += 1;
+    } else {
+        items.push({
+            courseId: course._id,
+            count: 1,
+        })
+    };
+
+    this.cart = { items };
+    return this.save();
+
+}
+
 module.exports = model('User', userSchema)
