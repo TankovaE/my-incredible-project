@@ -23,7 +23,14 @@
             {{#if isCart}}
             <li class="active"><a href="/cart">Cart</a></li>
             {{else}}
-            <li><a href="/cart">CArt</a></li>
+            <li><a href="/cart">Cart</a></li>
+            {{/if}}
+
+
+            {{#if isOrders}}
+            <li class={{isOrders}}><a href="/orders">Orders</a></li>
+            {{else}}
+            <li><a href="/orders">Orders</a></li>
             {{/if}}
 
         </ul>
