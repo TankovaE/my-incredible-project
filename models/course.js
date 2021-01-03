@@ -6,7 +6,7 @@
 
 const { Schema, model } = require('mongoose');
 
-const course = new Schema({
+const courseSchema = new Schema({
     title: { type: String, required: true },
     price: { type: String, required: true },
     image: String,
@@ -15,10 +15,20 @@ const course = new Schema({
         ref: 'User',
     }
     // поле id mongoose будет автоматически создавать при создании новой модели
+});
+
+// трансформируем данные для клиента
+courseSchema.method('toClient', function() {
+    const course = this.toObject();
+
+    course.id = course._id;
+    delete course._id;
+
+    return course;
 })
 
 // model позволяет регистрировать и создавать новые модели на основе схемы
-module.exports = model('Course', course)
+module.exports = model('Course', courseSchema)
 
 // БЕЗ MONGODB
 
