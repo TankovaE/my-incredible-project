@@ -54,3 +54,6 @@ if ($cart) {
         }
     })
 }
+
+// инициализируем табы для auth
+ M.Tabs.init(document.querySelectorAll('.tabs'));

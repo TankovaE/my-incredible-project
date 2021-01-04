@@ -9,6 +9,7 @@ const coursesRoutes = require('./routes/courses');
 const mongoose = require('mongoose');
 const User = require('./models/user');
 const ordersRoutes = require('./routes/orders');
+const authRouter = require('./routes/auth');
 
 
 //аналог объекта server
@@ -66,6 +67,7 @@ app.use('/add', addRoutes)
 app.use('/courses', coursesRoutes)
 app.use('/cart', cartRoutes)
 app.use('/orders', ordersRoutes)
+app.use('/auth', authRouter)
 
 //базовый метод который позволяет обрабатывать различные запросы
 //первый параметр - адрес страницы, второй - это handler, который принимает 3 прараметра
