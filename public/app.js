@@ -2,11 +2,25 @@ const toCurrency = price => {
     return new Intl.NumberFormat('ru-RU', {currency: 'rub', style: 'currency'}).format(price);
 }
 
+const toDate = date => {
+    return new Intl.DateTimeFormat('ru-RU', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+    }).format(new Date(date));
+}
+
 // клиентский js
 // здесь мы форматируем цену, чтобы она вглядела красиво
 document.querySelectorAll('.price').forEach(node => {
-    console.log(node.textContent);
     node.textContent = toCurrency(node.textContent);
+})
+
+document.querySelectorAll('.date').forEach(node => {
+    node.textContent = toDate(node.textContent);
 })
 
 const $cart = document.querySelector('#cart');
