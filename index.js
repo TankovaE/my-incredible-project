@@ -11,11 +11,25 @@ const User = require('./models/user');
 const ordersRoutes = require('./routes/orders');
 const authRouter = require('./routes/auth');
 const session = require('express-session');
+// require возвращает определенную функцию, которую мы должны вызвать и передать ей пакет,
+// который мы будем использовать для синхронизации,
+// после этого данный конструктор (require('connect-mongodb-session')(session)) вернет нам класс,
+// который мы сможем использовать для сохранения сессий в базе
+const MongStore = require('connect-mongodb-session')(session);
 const varMiddleware = require('./middleware/variables');
 
+const MONGODB_URI = 'mongodb+srv://eitnkv:yKyonP8JZCOxEmye@cluster0.vdlvu.mongodb.net/shop';
 
 //аналог объекта server
 const app = express();
+
+// создали экземпляр стора, который передадим в сессию
+const store = new MongStore({
+    // collections - имеется ввиду таблицы базы данных
+    // здесь мы указываем таблицу, в которой хранятся сессии в mongodb
+    collection: 'sessions',
+    uri: MONGODB_URI,
+})
 
 //объект конфигурации handlebars
 const hbs = exphbs.create({
@@ -54,7 +68,8 @@ app.use(express.urlencoded({extended: true}))
 app.use(session({
     secret: 'some secret',
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    store: store,
 }));
 
 // подключаем свой middleware,
@@ -109,11 +124,9 @@ const PORT = process.env.PORT || 3000;
 
 async function start() {
     try {
-        const db = 'mongodb+srv://eitnkv:yKyonP8JZCOxEmye@cluster0.vdlvu.mongodb.net/shop';
-
         //обращаемся к пакету mongoose для того, чтобы подключиться к базе данных с помощью connect
         // useNewUrlParser нужен, чтобы не было разных ворнингов
-        await mongoose.connect(db, {useNewUrlParser: true, useFindAndModify: false, useUnifiedTopology: true});
+        await mongoose.connect(MONGODB_URI, {useNewUrlParser: true, useFindAndModify: false, useUnifiedTopology: true});
 
         // если есть хоть 1 элемент, метод findOne его вернет
         // const candidate = await User.findOne();
