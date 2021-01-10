@@ -1,6 +1,8 @@
 const { Router } = require('express');
 const Course = require('../models/course');
 const router = Router();
+const auth = require('../middleware/auth');
+
 
 // с помощью router можно описывать конкретные роуты
 // здесь первый параметр "/", так как мы указали префикс в файле index.js для каждого роута
@@ -45,9 +47,12 @@ router.get('/:id', async (req, res) => {
         title: `Курс ${course.title}`,
         course
     });
-})
+});
 
-router.get('/:id/edit', async (req, res) => {
+// хотим сделать этот роут доступным толлько для авторизованного пользователя,
+// поэтому вторым параметром передаем middleware auth,
+// который неавторизованного пользователя редиректит на страницу логина
+router.get('/:id/edit', auth, async (req, res) => {
     // смотрим в query.allow, чтобы выяснить доступно ли редактирование для данного курса
     // если query.allow=false, редиректим на главную
     if (!req.query.allow) {
@@ -70,7 +75,7 @@ router.get('/:id/edit', async (req, res) => {
 
 
 // <form action="/courses/edit" method="POST"></form>
-router.post('/edit', async (req, res) => {
+router.post('/edit', auth, async (req, res) => {
     // с mongodb
     const { id } = req.body;
     delete req.body.id
@@ -79,7 +84,7 @@ router.post('/edit', async (req, res) => {
 })
 
 
-router.post('/remove', async (req, res) => {
+router.post('/remove', auth, async (req, res) => {
     try {
         // позволяет удалить объект, при условии совпадения id, условие мы передаем в пропсах: _id: req.body.id
         // означает оно, что id из формы из body совпадает с id в mongodb
