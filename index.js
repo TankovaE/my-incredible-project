@@ -17,6 +17,7 @@ const session = require('express-session');
 // который мы сможем использовать для сохранения сессий в базе
 const MongStore = require('connect-mongodb-session')(session);
 const varMiddleware = require('./middleware/variables');
+const userMiddleware = require('./middleware/user');
 
 const MONGODB_URI = 'mongodb+srv://eitnkv:yKyonP8JZCOxEmye@cluster0.vdlvu.mongodb.net/shop';
 
@@ -76,6 +77,10 @@ app.use(session({
 // который берет в запросе req.session новую переменную isAuthenticated
 // и передает ее значение в res.locals.isAuth, которой будет пользоваться фронт
 app.use(varMiddleware);
+
+// middleware, который преобразовывает данные юзера сессии из базы
+// в норм данные юзера
+app.use(userMiddleware);
 
 //используем роуты страниц
 //первый параметр - префикс пути для всех роутов
