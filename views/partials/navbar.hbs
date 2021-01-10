@@ -14,6 +14,12 @@
             <li><a href="/courses">Courses</a></li>
             {{/if}}
 
+            {{!-- переменную isAuth мы получаем из res.locals.isAuth
+            с помощью middleware из /middleware/variables --}}
+
+            {{#if isAuth}} {{!-- для авторизованного пользователя --}}
+
+
             {{#if isAdd}}
             <li class="active"><a href="/add">Add course</a></li>
             {{else}}
@@ -33,10 +39,16 @@
             <li><a href="/orders">Orders</a></li>
             {{/if}}
 
+            <li><a href="/auth/logout">Logout</a></li>
+
+            {{else}} {{!-- для неавторизованного пользователя --}}
+
             {{#if isLogin}}
             <li class="active"><a href="/auth/login#login">Log in</a></li>
             {{else}}
             <li><a href="/auth/login#login">Log in</a></li>
+            {{/if}}
+
             {{/if}}
 
         </ul>

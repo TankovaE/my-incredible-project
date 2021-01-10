@@ -10,6 +10,8 @@ const mongoose = require('mongoose');
 const User = require('./models/user');
 const ordersRoutes = require('./routes/orders');
 const authRouter = require('./routes/auth');
+const session = require('express-session');
+const varMiddleware = require('./middleware/variables');
 
 
 //аналог объекта server
@@ -58,6 +60,18 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 //нужно для обработки запроса, в том числе получение body запроса
 app.use(express.urlencoded({extended: true}))
+
+// подключили специальный пакет для работы с сессиями пользователей
+app.use(session({
+    secret: 'some secret',
+    resave: false,
+    saveUninitialized: false
+}));
+
+// подключаем свой middleware,
+// который берет в запросе req.session новую переменную isAuthenticated
+// и передает ее значение в res.locals.isAuth, которой будет пользоваться фронт
+app.use(varMiddleware);
 
 //используем роуты страниц
 //первый параметр - префикс пути для всех роутов
