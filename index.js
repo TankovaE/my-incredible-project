@@ -40,19 +40,6 @@ app.set('view engine', 'hbs');
 app.set('views', 'views');
 
 
-// пишем свой middleware для работы с user
-// next позволяет продолжить выполнение цепочки мидлвеиров
-// если мы его не вызовем, работа приложения остановится на нем
-app.use(async (req, res, next) => {
-   try { // хотим, чтобы с каждым запросом уходил пользователь
-        const user = await User.findById('5fe8cb422cce6422f4b59419');
-        req.user = user;
-        next();
-    } catch (e) {
-        console.log(e);
-    }
-})
-
 //use позволяет добавлять мидлвейры (доп функциональность) для нашего приложения
 //указываем, что папка public является публичной (статичной),
 //в ней мы храним статичные объект, например, картинки или стили css
@@ -62,6 +49,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({extended: true}))
 
 // подключили специальный пакет для работы с сессиями пользователей
+// пакет сам пишет куку с зашифрованным ключом сессии как только мы деаем req.session.save()
+// он также удаляет куку, если сделан  req.session.destroy()
 app.use(session({
     secret: 'some secret',
     resave: false,
@@ -118,8 +107,6 @@ app.use('/auth', authRouter)
 const PORT = process.env.PORT || 3000;
 
 
-
-
 async function start() {
     try {
         const db = 'mongodb+srv://eitnkv:yKyonP8JZCOxEmye@cluster0.vdlvu.mongodb.net/shop';
@@ -129,18 +116,18 @@ async function start() {
         await mongoose.connect(db, {useNewUrlParser: true, useFindAndModify: false, useUnifiedTopology: true});
 
         // если есть хоть 1 элемент, метод findOne его вернет
-        const candidate = await User.findOne();
+        // const candidate = await User.findOne();
 
-        if (!candidate) {
-            const user = new User({
-                email: 'eitnkv@gmail.com',
-                name: 'Ekaterina',
-                cart: {
-                    items: []
-                }
-            })
-            await user.save();
-        }
+        // if (!candidate) {
+        //     const user = new User({
+        //         email: 'eitnkv@gmail.com',
+        //         name: 'Ekaterina',
+        //         cart: {
+        //             items: []
+        //         }
+        //     })
+        //     await user.save();
+        // }
     
         //на момент заруска приложения будет готова база данных
         app.listen(PORT, () => {

@@ -1,4 +1,5 @@
 const { Router } = require('express');
+const User = require('../models/user');
 
 const router = Router();
 
@@ -11,10 +12,18 @@ router.get('/login', async (req, res) => {
 });
 
 router.post('/login', async (req, res) => {
-    // пакет express-session для работы с сессиями
+    const user = await User.findById('5fe8cb422cce6422f4b59419');
+    // session берется из пакета для работы с сессиями express-session 
     // isAuthenticated - наша переменная
+    req.session.user = user;
     req.session.isAuthenticated = true;
-    res.redirect('/')
+    req.session.save(err => {
+        if (err) {
+            throw err
+        }
+        // делаем редирект только если авторизация прошла ок
+        res.redirect('/')
+    })
 });
 
 // очищаем сессию и редиректим на главную
