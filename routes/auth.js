@@ -33,6 +33,27 @@ router.get('/logout', async (req, res) => {
         // коллбек нам понадобится чтобы очищать данные из базы данных
         res.redirect('/auth/login#login')
     })
+});
+
+router.post('/register', async (req, res) => {
+    try {
+        //берез из формы данные, которые ввел пользователь при регистрации
+        const { email, name, password, repeat } = req.body;
+        const candidate = await User.findOne({ email });
+
+        if (candidate) {
+            res.redirect('/auth/login#register')
+        } else {
+            const user = new User({
+                email, name, password, cart: { items: [] }
+            });
+            await user.save();
+            res.redirect('/auth/login#login');
+        }
+
+    } catch (e) {
+        console.log(e);
+    }
 })
 
 
