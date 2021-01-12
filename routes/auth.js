@@ -1,4 +1,5 @@
 const { Router } = require('express');
+const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 
 const router = Router();
@@ -17,7 +18,9 @@ router.post('/login', async (req, res) => {
         const candidate = await User.findOne({ email });
 
         if (candidate) {
-            const areSame = password === candidate.password;
+            // сравниваем введенный пароль с зашиырованным с помощью библиотеки bcrypt
+            const areSame = await bcrypt.compare(password, candidate.password);
+
             if (areSame) {
                 // если пароль верный
                 const user = candidate;
@@ -62,9 +65,13 @@ router.post('/register', async (req, res) => {
         if (candidate) {
             res.redirect('/auth/login#register')
         } else {
+            // hash - асинхронный метод, который возвращает промис
+            // он помогает нам зашифровать пароль
+            // так password : "$2a$10$iR0mSyxUSMw85Cb7XBNOj.aOTSvQGa8VSc.zioHcAolz7aWBd7X5m" он будет выглядеть в базе в зашифрованном виде
+            const hashPassword = await bcrypt.hash(password, 10)
             // добавляем нового юзера только если email не занят
             const user = new User({
-                email, name, password, cart: { items: [] }
+                email, name, password: hashPassword, cart: { items: [] }
             });
             await user.save();
             res.redirect('/auth/login#login');
