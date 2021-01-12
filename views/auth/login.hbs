@@ -19,6 +19,11 @@
                     <label for="password">Password</label>
                     <span class="helper-text" data-error="Type password" data-success="right"></span>
                 </div>
+                {{!-- middleware csrf будет смотреть на input с спец названием _csrf, для того, чтобы сравнить токен,
+                который придет в value --}}
+                {{!-- {{csrf}} приходит в views с помощью middleware variables --}}
+                {{!-- добавляем этот спец input для всех форм, которые обрабатывают POST зыпрос --}}
+                <input type="hidden" name="_csrf" value="{{csrf}}" />
                 <button class="btn btn-primary" type="submit">Submit</button>
             </form>
         </div>
@@ -45,6 +50,11 @@
                     <label for="confirm">Repit password</label>
                     <span class="helper-text" data-error="Type password" data-success="right"></span>
                 </div>
+                {{!-- middleware csrf будет смотреть на input с спец названием _csrf, для того, чтобы сравнить токен,
+                который придет в value --}}
+                {{!-- {{csrf}} приходит в views с помощью middleware variables --}}
+                {{!-- добавляем этот спец input для всех форм, которые обрабатывают POST зыпрос --}}
+                <input type="hidden" name="_csrf" value="{{csrf}}" />
                 <button class="btn btn-primary" type="submit">Submit</button>
             </form>
         </div>

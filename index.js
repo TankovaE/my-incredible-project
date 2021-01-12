@@ -18,6 +18,7 @@ const session = require('express-session');
 const MongStore = require('connect-mongodb-session')(session);
 const varMiddleware = require('./middleware/variables');
 const userMiddleware = require('./middleware/user');
+const csrf = require('csurf');
 
 const MONGODB_URI = 'mongodb+srv://eitnkv:yKyonP8JZCOxEmye@cluster0.vdlvu.mongodb.net/shop';
 
@@ -72,6 +73,14 @@ app.use(session({
     saveUninitialized: false,
     store: store,
 }));
+// для защиты приложения от перехвата сессий мы будем генерировать уникальные ключи для клиента
+// csrf middleware проверяет наличие токена
+// вызываем сразу после session
+// также нам потребуется для всех форм (post запросы) добавить токен
+// к каждой форме мы добавим скрытый input, куда мы будем передавать спец переменную, которую будет проверять csrf
+// в качестве значения мы будем ей передавать сгенерированный токен
+app.use(csrf());
+
 
 // подключаем свой middleware,
 // который берет в запросе req.session новую переменную isAuthenticated
