@@ -9,6 +9,11 @@ router.get('/login', async (req, res) => {
     res.render('auth/login', {
         title: 'Auth',
         isLogin: true,
+        // передаем на клиент ощибку, которую отправляет запрос /register вместе с редиректом в случаем ошибки
+        // flas хранит все данные в сессии, со временем они удалятся
+        registerError: req.flash('registerError'),
+        loginError: req.flash('loginError'),
+        
     })
 });
 
@@ -36,9 +41,11 @@ router.post('/login', async (req, res) => {
                     res.redirect('/')
                 })
             } else  {
+                req.flash('loginError', 'Wrong password')
                 res.redirect('/auth/login#login');
             }
         } else {
+            req.flash('loginError', 'User is not exist')
             res.redirect('/auth/login#login');
         }
     } catch (e) {
@@ -63,7 +70,9 @@ router.post('/register', async (req, res) => {
         const candidate = await User.findOne({ email });
 
         if (candidate) {
-            res.redirect('/auth/login#register')
+            // метод из библиотеки flash, который позволяет с помощью сессии делать транспортировку определенныx ошибок между запросами
+            req.flash('registerError', 'User with this email is exist')
+            res.redirect('/auth/login#register');
         } else {
             // hash - асинхронный метод, который возвращает промис
             // он помогает нам зашифровать пароль
