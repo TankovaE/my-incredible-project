@@ -1,12 +1,16 @@
 const { Router } = require('express');
-const Course = require('../models/course')
+const Course = require('../models/course');
+const auth = require('../middleware/auth');
 
 const router = Router();
 
 // с помощью router можно описывать конкретные роуты
 // здесь первый параметр "/", так как мы указали префикс в файле index.js для каждого роута
 // app.use('/add', addRoutes)
-router.get('/', (req, res) => {
+// хотим сделать этот роут доступным толлько для авторизованного пользователя,
+// поэтому вторым параметром передаем middleware auth,
+// который неавторизованного пользователя редиректит на страницу логина
+router.get('/', auth, (req, res) => {
     res.render('add', {
         title: 'Add course',
         isAdd: true
@@ -24,7 +28,7 @@ router.get('/', (req, res) => {
 // })
 
 //c mongodb
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
     const course = new Course({
         title: req.body.title,
         price: req.body.price,
@@ -41,8 +45,6 @@ router.post('/', async (req, res) => {
         res.redirect('/courses')
     }
     
-
-
 })
 
 module.exports = router;

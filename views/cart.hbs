@@ -15,7 +15,8 @@
             <tr>
                 <td>{{title}}</td>
                 <td>{{count}}</td>
-                <td><button class="btn btn-small js-remove" data-id="{{id}}">delete</button></td>
+                <td><button class="btn btn-small js-remove" data-id="{{id}}" data-csrf="{{@root.csrf}}">delete</button>
+                </td>
             </tr>
             {{/each}}
         </tbody>
@@ -24,7 +25,13 @@
         <strong>Price:</strong>
         <span class="price">{{price}}</span>
     </p>
-    <form action="/orders" method="POST"><button type="submit" class="btn">Submit</button></form>
+    <form action="/orders" method="POST">
+        {{!-- middleware csrf будет смотреть на input с спец названием _csrf, для того, чтобы сравнить токен,
+        который придет в value --}}
+        {{!-- {{csrf}} приходит в views с помощью middleware variables --}}
+        {{!-- добавляем этот спец input для всех форм, которые обрабатывают POST зыпрос --}}
+        <input type="hidden" name="_csrf" value="{{csrf}}" /><button type="submit" class="btn">Submit</button>
+    </form>
     {{else}}
     <p>Cart is empty</p>
     {{/if}}

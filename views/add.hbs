@@ -17,5 +17,10 @@
         <label for="image">Course image</label>
         <span class="helper-text" data-error="Type url" data-success="right"></span>
     </div>
+    {{!-- middleware csrf будет смотреть на input с спец названием _csrf, для того, чтобы сравнить токен,
+    который придет в value --}}
+    {{!-- {{csrf}} приходит в views с помощью middleware variables --}}
+    {{!-- добавляем этот спец input для всех форм, которые обрабатывают POST зыпрос --}}
+    <input type="hidden" name="_csrf" value="{{csrf}}" />
     <button class="btn btn-primary">Add course</button>
 </form>

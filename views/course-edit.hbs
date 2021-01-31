@@ -21,10 +21,20 @@
     {{!-- для уже существующих курсов хотим передавать вместе с формой id курса, чтобы обновлять его данные в базе по id
     --}}
     <input type="hidden" name="id" value="{{course.id}}" />
+    {{!-- middleware csrf будет смотреть на input с спец названием _csrf, для того,
+    чтобы сравнить токен, который придет в value --}}
+    {{!-- {{csrf}} приходит в views с помощью middleware variables --}}
+    {{!-- добавляем этот спец input для всех форм, которые обрабатывают POST зыпрос --}}
+    <input type="hidden" name="_csrf" value="{{csrf}}" />
     <button type="submit" class="btn btn-primary">Edit course</button>
 </form>
 
 <form action="/courses/remove" method="POST">
     <input type="hidden" name="id" value="{{course.id}}" />
+    {{!-- middleware csrf будет смотреть на input с спец названием _csrf, для того, чтобы сравнить токен,
+    который придет в value --}}
+    {{!-- {{csrf}} приходит в views с помощью middleware variables --}}
+    {{!-- добавляем этот спец input для всех форм, которые обрабатывают POST зыпрос --}}
+    <input type="hidden" name="_csrf" value="{{csrf}}" />
     <button class="btn red">Remove course</button>
 </form>

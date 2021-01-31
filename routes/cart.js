@@ -1,6 +1,7 @@
 const { Router } = require('express');
 // const Cart = require('../models/cart');
 const Course = require('../models/course');
+const auth = require('../middleware/auth');
 
 const router = Router();
 
@@ -18,7 +19,10 @@ function computePrice(courses) {
     }, 0)
 }
 
-router.post('/add', async (req, res) => {
+// хотим сделать этот роут доступным толлько для авторизованного пользователя,
+// поэтому вторым параметром передаем middleware auth,
+// который неавторизованного пользователя редиректит на страницу логина
+router.post('/add', auth, async (req, res) => {
     const course = await Course.findById(req.body.id);
 
     // await Cart.add(course);
@@ -30,7 +34,7 @@ router.post('/add', async (req, res) => {
 })
 
 //обработчик метода get
-router.get('/', async (req, res) => {
+router.get('/', auth, async (req, res) => {
 
     // получаем юзера, чтобы достать его корзину, у которой есть список курсов, состоящих из id
     // но нам нужны сами курсы, а не только id,
@@ -48,9 +52,10 @@ router.get('/', async (req, res) => {
         courses,
         price: computePrice(courses)
     })
-})
+});
 
-router.delete('/remove/:id', async (req, res) => {
+
+router.delete('/remove/:id', auth, async (req, res) => {
     // берем из параметров id и по нему удаляем с помощью метода класса Cart курс
     // const cart = await Cart.remove(req.params.id);
 
