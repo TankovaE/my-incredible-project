@@ -19,8 +19,7 @@ const varMiddleware = require('./middleware/variables');
 const userMiddleware = require('./middleware/user');
 const csrf = require('csurf');
 const flash = require('connect-flash');
-
-const MONGODB_URI = 'mongodb+srv://eitnkv:yKyonP8JZCOxEmye@cluster0.vdlvu.mongodb.net/shop';
+const keys = require('./keys');
 
 //аналог объекта server
 const app = express();
@@ -30,7 +29,7 @@ const store = new MongStore({
     // collections - имеется ввиду таблицы базы данных
     // здесь мы указываем таблицу, в которой хранятся сессии в mongodb
     collection: 'sessions',
-    uri: MONGODB_URI,
+    uri: keys.MONGODB_URI,
 })
 
 //объект конфигурации handlebars
@@ -68,7 +67,7 @@ app.use(express.urlencoded({extended: true}))
 // пакет сам пишет куку с зашифрованным ключом сессии как только мы деаем req.session.save()
 // он также удаляет куку, если сделан  req.session.destroy()
 app.use(session({
-    secret: 'some secret',
+    secret: keys.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     store: store,
@@ -145,7 +144,7 @@ async function start() {
     try {
         //обращаемся к пакету mongoose для того, чтобы подключиться к базе данных с помощью connect
         // useNewUrlParser нужен, чтобы не было разных ворнингов
-        await mongoose.connect(MONGODB_URI, {useNewUrlParser: true, useFindAndModify: false, useUnifiedTopology: true});
+        await mongoose.connect(keys.MONGODB_URI, {useNewUrlParser: true, useFindAndModify: false, useUnifiedTopology: true});
 
         // если есть хоть 1 элемент, метод findOne его вернет
         // const candidate = await User.findOne();
