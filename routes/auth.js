@@ -4,7 +4,10 @@ const User = require('../models/user');
 const nodemailer = require('nodemailer');
 const sendgrid = require('nodemailer-sendgrid-transport');
 const keys = require('../keys');
-const regEmail = require('../emails/registration')
+const regEmail = require('../emails/registration');
+// встроенная библиотека node js
+const crypto = require('crypto');
+const resetEmail = require('../emails/reset');
 
 //создаем транспортер для отправки писем
 const transporter = nodemailer.createTransport(sendgrid({
@@ -102,6 +105,54 @@ router.post('/register', async (req, res) => {
         console.log(e);
     }
 })
+
+router.get('/reset', (req, res) => {
+    res.render('auth/reset', {
+        title: "Forget password?",
+        error: req.flash('error')
+    })
+});
+
+router.post('/reset', (req, res) => {
+    try {
+        // в чем заключается идея восстановления пароля: мы будем генерировать рендомный ключ,
+        // который запишем пользователю в базу данных, после этого мы отправим письмо этому пользователю,
+        // содержащее данный ключ, человек пройдет по ссылке, которая будет содержать данный ключ,
+        // если он совпадает с ключом, который записан у него в базе данных и у него не истечет время жизни
+        // данного токена, то тогда мы дадим ему возможность изменить пароль
+
+        // crypto.randomBytes позволяет нам сгенерировать токен
+        // randomBytes принимает количество символов и коллбек
+        crypto.randomBytes(32, async (err, buffer) => {
+            if (err) {
+                req.flash('error', 'Something went wrong');
+                return res.redirect('/auth/reset');
+            }
+
+            // создаем токен и ищем в базе юзера по email
+            const token = buffer.toString('hex');
+            const candidate = await User.findOne({email: req.body.email});
+
+            // если юзер найден, прописываем ему токен и время жизни в базу
+            if (candidate) {
+                candidate.resetToken = token;
+                candidate.resetTokenExp = Date.now() + 60 * 60 * 1000;
+                // сохраняем в базу
+                await candidate.save();
+                // отправляем email с токеном
+                await transporter.sendMail(resetEmail(candidate.email, token));
+                res.redirect('/auth/login');
+            } else {
+                req.flash('error', 'This email is not exist');
+                res.redirect('/auth/reset');
+            }
+        })
+
+    } catch (e) {
+        console.log(e)
+    }
+})
+
 
 
 module.exports = router;

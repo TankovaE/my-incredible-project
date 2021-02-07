@@ -29,6 +29,7 @@
                 {{!-- {{csrf}} приходит в views с помощью middleware variables --}}
                 {{!-- добавляем этот спец input для всех форм, которые обрабатывают POST зыпрос --}}
                 <input type="hidden" name="_csrf" value="{{csrf}}" />
+                <p><a href="/auth/reset">Forget password?</a></p>
                 <button class="btn btn-primary" type="submit">Submit</button>
             </form>
         </div>

@@ -1,0 +1,23 @@
+<div class="row">
+    <div class="col s6 offset-s3">
+
+        {{#if error}}
+        <p class="alert">{{error}}</p>
+        {{/if}}
+
+        <h1>Reset password</h1>
+        <form action="/auth/reset" method="POST">
+            <div class="input-field">
+                <input id="email" name="email" type="email" class="validate" required>
+                <label for="email">Email</label>
+                <span class="helper-text" data-error="Type email" data-success="right"></span>
+            </div>
+            {{!-- middleware csrf будет смотреть на input с спец названием _csrf, для того, чтобы сравнить токен,
+            который придет в value --}}
+            {{!-- {{csrf}} приходит в views с помощью middleware variables --}}
+            {{!-- добавляем этот спец input для всех форм, которые обрабатывают POST зыпрос --}}
+            <input type="hidden" name="_csrf" value="{{csrf}}" />
+            <button class="btn btn-primary" type="submit">Reset</button>
+        </form>
+    </div>
+</div>
