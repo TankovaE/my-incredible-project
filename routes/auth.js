@@ -1,6 +1,15 @@
 const { Router } = require('express');
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
+const nodemailer = require('nodemailer');
+const sendgrid = require('nodemailer-sendgrid-transport');
+const keys = require('../keys');
+const regEmail = require('../emails/registration')
+
+//создаем транспортер для отправки писем
+const transporter = nodemailer.createTransport(sendgrid({
+    auth: {api_key: keys.SENDGRID_API_KEY}
+}))
 
 const router = Router();
 
@@ -83,6 +92,9 @@ router.post('/register', async (req, res) => {
                 email, name, password: hashPassword, cart: { items: [] }
             });
             await user.save();
+            // отправляем пользователю письмо с информацией о регистрауии
+            // будет отправляться в фоновом режиме, после редиректа, чтобы пользователь не ждал
+            await transporter.sendMail(regEmail(email));
             res.redirect('/auth/login#login');
         }
 
