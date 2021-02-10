@@ -1,6 +1,9 @@
 name: Main workflow
 
-# event
+# event ex: pull_request or more specific:
+# on:
+#   pull_request:
+#     types: [closed, assigned, opened, reopened]
 on: push
 
 jobs:

@@ -6,6 +6,27 @@ jobs:
   run-github-actions:
     runs-on: ubuntu-latest
     steps:
+      # cant get files in ls command
+      - name: List Files with
+        run: |
+          pwd
+          ls
+          echo $GITHUB_SHA
+          echo $GITHUB_REPOSITORY
+          echo $GITHUB_WORKSPACE
+          echo "${{ github.token }}"
+        # the same that do actions/checkout
+        # git clone git@github:$GITHUB_REPOSITORY
+        # git checkout $GITHUB_SHA
+      # checkout clones our repository into our working directory
+      # git auth, fetch and checkout to latest commit
+      - name: Checkout
+        uses: actions/checkout@v1
+      # can get files in ls command after checkout
+      - name: List Files with
+        run: |
+          pwd
+          ls
       - name: Simple JS Action
         id: greet
         # use https://github.com/actions/hello-world-javascript-action
