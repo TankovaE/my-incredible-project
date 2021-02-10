@@ -1,0 +1,17 @@
+name: Actions Workflow
+
+on: push
+
+jobs:
+  run-github-actions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Simple JS Action
+        id: greet
+        # use https://github.com/actions/hello-world-javascript-action
+        uses: actions/hello-world-javascript-action@v1
+        with:
+          who-to-greet: Katarina
+      - name: Log Greeting Time
+        # reference on previos step with id "greet" and get this running time
+        run: echo "${{ steps.greet.outputs.time }}"
