@@ -5,7 +5,8 @@ on: push
 
 jobs:
   run-shell-command:
-  # machine
+    # operating sistem
+    # default shell is bash
     runs-on: ubuntu-latest
     steps:
     # array of objects with name and run keys
@@ -16,10 +17,21 @@ jobs:
         run: |
           node -v
           npm -v
-      # step on python machine
+      # step on python shell (default shell is bash)
       - name: python Command
         run: |
           import platform
           print(platform.processor())
         shell: python
+
+  run-window-commands:
+    # default shell for windows is powershell
+    runs-on: windows-latest
+    steps: 
+      - name: Directory PowerShell
+        run: Get-Location
+      - name: Directory Bash
+        run: pwd
+        shell: bash
+
       
