@@ -42,7 +42,9 @@ const hbs = exphbs.create({
     runtimeOptions: {
         allowProtoPropertiesByDefault: true,
         allowProtoMethodsByDefault: true
-      }
+      },
+    // подключаем кастомные хелперы, которые смодем использовать в handlebars
+    helpers: require('./utils/hbs-helpers'),
 });
 
 //для того чтобы зарегистрировать данный модуль как движок для рендеринга html страниц
