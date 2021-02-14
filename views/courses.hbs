@@ -19,9 +19,14 @@
                 если мы не обратимся к @root, то isAuth будет искаться в элементе курса, так как мы находимся в цикле
                 #each --}}
                 {{#if @root.isAuth}}
+
+                {{!-- ifeq кастомная директива из utils/hbs-helpers --}}
+                {{#ifeq userId._id @root.userId}}
                 {{!-- query параметром allow=true мы разрешаем редактирование курса, а читать мы его будем в
                 routes/courses.js --}}
                 <a href="/courses/{{id}}/edit?allow=true">Edit course</a>
+                {{/ifeq}}
+
                 <form action="/cart/add" method="POST">
                     <input type="hidden" name="id" value="{{id}}">
                     {{!-- middleware csrf будет смотреть на input с спец названием _csrf, для того, чтобы сравнить

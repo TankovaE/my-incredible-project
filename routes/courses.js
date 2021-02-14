@@ -3,6 +3,10 @@ const Course = require('../models/course');
 const router = Router();
 const auth = require('../middleware/auth');
 
+function isCourseOwner(course, req) {
+    return course.userId.toString() === req.user._id.toString()
+}
+
 
 // с помощью router можно описывать конкретные роуты
 // здесь первый параметр "/", так как мы указали префикс в файле index.js для каждого роута
@@ -16,17 +20,20 @@ router.get('/', async (req, res) => {
     // populate позволяет получить не просто userId, который есть у каждого курса в mongodb
     // а целиком объект юзера, благодаря связке ref в моделях
     // select позволяет достать только определенные поля, а не все
-    const courses = await Course.find({})
+    try { 
+        const courses = await Course.find({})
         .populate('userId')
         // .select('price image name');
 
-    console.log(courses);
-
-    res.render('courses', {
-        title: 'Courses', 
-        isCourses: true,
-        courses,
-    });
+        res.render('courses', {
+            title: 'Courses', 
+            isCourses: true,
+            userId: req.user ? req.user._id.toString() : null,
+            courses,
+        });
+    } catch (e) {
+        console.log(e);
+    }
 });
 
 // обрабатываем новый get запрос, так как мы получаем новую страницу
@@ -37,16 +44,22 @@ router.get('/:id', async (req, res) => {
     // без mongodb
     // const course = await Course.getById(req.params.id);
 
-    // c mongodb
-    const course = await Course.findById(req.params.id);
 
-    // рендерим страницу course
-    res.render('course', {
-        // у страницы курса свой layout
-        layout: 'empty',
-        title: `Курс ${course.title}`,
-        course
-    });
+
+    try {
+        // c mongodb
+        const course = await Course.findById(req.params.id);
+
+        // рендерим страницу course
+        res.render('course', {
+            // у страницы курса свой layout
+            layout: 'empty',
+            title: `Курс ${course.title}`,
+            course
+        });
+    } catch (e) {
+        console.log(e);
+    }
 });
 
 // хотим сделать этот роут доступным толлько для авторизованного пользователя,
@@ -60,27 +73,49 @@ router.get('/:id/edit', auth, async (req, res) => {
         return res.redirect('/')
     }
 
-    // без mongodb
-    // const course = await Course.getById(req.params.id);
+    try {
+        // без mongodb
+        // const course = await Course.getById(req.params.id);
 
-    // с mongodb
-    const course = await Course.findById(req.params.id)
+        // с mongodb
+        const course = await Course.findById(req.params.id);
 
-    //имя страницы (view)
-    res.render('course-edit', {
-        title: `Редактировать ${course.title}`,
-        course
-    })
+        // если текущий авторизованный юзер не является автором курса, то запрещаем доступ на страницу редактирования курса
+        if (!isCourseOwner(course, req)) {
+            return res.redirect('/courses');
+        }
+
+        //имя страницы (view)
+        res.render('course-edit', {
+            title: `Редактировать ${course.title}`,
+            course
+        });
+
+    } catch (e) {
+        console.log(e);
+    }
 });
 
 
 // <form action="/courses/edit" method="POST"></form>
 router.post('/edit', auth, async (req, res) => {
-    // с mongodb
-    const { id } = req.body;
-    delete req.body.id
-    await Course.findByIdAndUpdate(id, req.body)
-    res.redirect('/courses');
+    try {
+        const { id } = req.body;
+        delete req.body.id
+
+        const course = await Course.findById(id);
+
+        if (!isCourseOwner(course, req)) {
+            return res.redirect('/courses');  
+        }
+
+        Object.assign(course, req.body);
+        await course.save()
+        res.redirect('/courses');
+
+    } catch (e) {
+        console.log(e)
+    }
 })
 
 
@@ -88,7 +123,10 @@ router.post('/remove', auth, async (req, res) => {
     try {
         // позволяет удалить объект, при условии совпадения id, условие мы передаем в пропсах: _id: req.body.id
         // означает оно, что id из формы из body совпадает с id в mongodb
-        await Course.deleteOne({_id: req.body.id});   
+        await Course.deleteOne({
+            _id: req.body.id, 
+            userId: req.user._id
+        });   
         res.redirect('/courses');
     } catch (e) {
         console.log(e);
