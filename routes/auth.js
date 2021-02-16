@@ -8,6 +8,8 @@ const regEmail = require('../emails/registration');
 // встроенная библиотека node js
 const crypto = require('crypto');
 const resetEmail = require('../emails/reset');
+const { validationResult } = require('express-validator/check');
+const { registerValidators } =  require('../utils/validators');
 
 //создаем транспортер для отправки писем
 const transporter = nodemailer.createTransport(sendgrid({
@@ -74,10 +76,21 @@ router.get('/logout', async (req, res) => {
     })
 });
 
-router.post('/register', async (req, res) => {
+// вторым и далее аргументом может быть любое кол-во мидвеиров, последний мидлвеир - обработчик
+// registerValidators - мидлвеир-валидатор из библиотеки express-validator
+router.post('/register', registerValidators, async (req, res) => {
     try {
         // берем из формы данные, которые ввел пользователь при регистрации
-        const { email, name, password, repeat } = req.body;
+        const { email, name, password, confirm } = req.body;
+
+        // проверяем, есть ли ошибка от валидатора
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            req.flash('registerError', errors.array()[0].msg);
+            // 422 - ошибка валидации
+            return res.status(422).redirect('/auth/login#register');
+        }
+
         // ищем в базе юзера с такие емейлом
         const candidate = await User.findOne({ email });
 
