@@ -20,6 +20,7 @@ const userMiddleware = require('./middleware/user');
 const csrf = require('csurf');
 const flash = require('connect-flash');
 const keys = require('./keys');
+const errorHandler = require('./middleware/error');
 
 //аналог объекта server
 const app = express();
@@ -106,6 +107,9 @@ app.use('/courses', coursesRoutes)
 app.use('/cart', cartRoutes)
 app.use('/orders', ordersRoutes)
 app.use('/auth', authRouter)
+
+// этот хендлер обработки ошибок должен подключаться после всех роутов
+app.use(errorHandler)
 
 //базовый метод который позволяет обрабатывать различные запросы
 //первый параметр - адрес страницы, второй - это handler, который принимает 3 прараметра
