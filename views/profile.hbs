@@ -1,0 +1,35 @@
+<h1>Profile</h1>
+
+<div class="row">
+    <div class="col s6">
+        <img class="avatar"
+            src="https://ih1.redbubble.net/image.388980474.8284/st,small,507x507-pad,600x600,f8f8f8.u1.jpg" alt="">
+    </div>
+    <div class="col s6">
+        <form action="/profile" method="POST">
+            <p>Email: <strong>{{user.email}}</strong></p>
+            <div class="input-field">
+                <input id="name" name="name" type="text" class="validate" required min="1" value="{{user.name}}">
+                <label for="name">Name</label>
+                <span class="helper-text" data-error="Type name" data-success="right"></span>
+            </div>
+            <div class="file-field input-field">
+                <div class="btn">
+                    <span>Avatar</span>
+                    <input type="file" name="avatar">
+                </div>
+                <div class="file-path-wrapper">
+                    <input class="file-path validate" type="text">
+                </div>
+            </div>
+
+            {{!-- middleware csrf будет смотреть на input с спец названием _csrf, для того, чтобы сравнить токен,
+            который придет в value --}}
+            {{!-- {{csrf}} приходит в views с помощью middleware variables --}}
+            {{!-- добавляем этот спец input для всех форм, которые обрабатывают POST зыпрос --}}
+            <input type="hidden" name="_csrf" value="{{csrf}}" />
+
+            <button class="btn" type="submit">Submit</button>
+        </form>
+    </div>
+</div>

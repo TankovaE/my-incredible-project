@@ -21,6 +21,7 @@ const csrf = require('csurf');
 const flash = require('connect-flash');
 const keys = require('./keys');
 const errorHandler = require('./middleware/error');
+const profileRoutes = require('./routes/profile');
 
 //аналог объекта server
 const app = express();
@@ -107,6 +108,7 @@ app.use('/courses', coursesRoutes)
 app.use('/cart', cartRoutes)
 app.use('/orders', ordersRoutes)
 app.use('/auth', authRouter)
+app.use('/profile', profileRoutes)
 
 // этот хендлер обработки ошибок должен подключаться после всех роутов
 app.use(errorHandler)
