@@ -1,7 +1,9 @@
 const { Router } = require('express');
 const Course = require('../models/course');
 const auth = require('../middleware/auth');
-
+const { courseValidators } = require('../utils/validators');
+const { validationResult } = require('express-validator/check');
+ 
 const router = Router();
 
 // с помощью router можно описывать конкретные роуты
@@ -28,7 +30,23 @@ router.get('/', auth, (req, res) => {
 // })
 
 //c mongodb
-router.post('/', auth, async (req, res) => {
+router.post('/', auth, courseValidators, async (req, res) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        return res.status(422).render('add', {
+            title: 'Add course',
+            isAdd: true,
+            error: errors.array()[0].msg,
+            // передаем полученный данные вместе с ответом, чтобы форма не стиралась после запроса с ошибкой
+            data: {
+                title: req.body.title,
+                price: req.body.price,
+                image: req.body.image,
+            }
+        })
+    }
+
     const course = new Course({
         title: req.body.title,
         price: req.body.price,
