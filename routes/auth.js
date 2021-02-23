@@ -81,38 +81,35 @@ router.get('/logout', async (req, res) => {
 router.post('/register', registerValidators, async (req, res) => {
     try {
         // берем из формы данные, которые ввел пользователь при регистрации
-        const { email, name, password, confirm } = req.body;
+        const { email, name, password } = req.body;
 
         // проверяем, есть ли ошибка от валидатора
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
+            // метод из библиотеки flash, который позволяет с помощью сессии делать транспортировку определенныx ошибок между запросами
             req.flash('registerError', errors.array()[0].msg);
             // 422 - ошибка валидации
             return res.status(422).redirect('/auth/login#register');
         }
 
         // ищем в базе юзера с такие емейлом
-        const candidate = await User.findOne({ email });
+        // const candidate = await User.findOne({ email });
 
-        if (candidate) {
-            // метод из библиотеки flash, который позволяет с помощью сессии делать транспортировку определенныx ошибок между запросами
-            req.flash('registerError', 'User with this email is exist')
-            res.redirect('/auth/login#register');
-        } else {
-            // hash - асинхронный метод, который возвращает промис
-            // он помогает нам зашифровать пароль
-            // так password : "$2a$10$iR0mSyxUSMw85Cb7XBNOj.aOTSvQGa8VSc.zioHcAolz7aWBd7X5m" он будет выглядеть в базе в зашифрованном виде
-            const hashPassword = await bcrypt.hash(password, 10)
-            // добавляем нового юзера только если email не занят
-            const user = new User({
-                email, name, password: hashPassword, cart: { items: [] }
-            });
-            await user.save();
-            // отправляем пользователю письмо с информацией о регистрауии
-            // будет отправляться в фоновом режиме, после редиректа, чтобы пользователь не ждал
-            await transporter.sendMail(regEmail(email));
-            res.redirect('/auth/login#login');
-        }
+
+        // hash - асинхронный метод, который возвращает промис
+        // он помогает нам зашифровать пароль
+        // так password : "$2a$10$iR0mSyxUSMw85Cb7XBNOj.aOTSvQGa8VSc.zioHcAolz7aWBd7X5m" он будет выглядеть в базе в зашифрованном виде
+        const hashPassword = await bcrypt.hash(password, 10)
+        // добавляем нового юзера только если email не занят
+        const user = new User({
+            email, name, password: hashPassword, cart: { items: [] }
+        });
+        await user.save();
+        // отправляем пользователю письмо с информацией о регистрауии
+        // будет отправляться в фоновом режиме, после редиректа, чтобы пользователь не ждал
+        await transporter.sendMail(regEmail(email));
+        res.redirect('/auth/login#login');
+        
 
     } catch (e) {
         console.log(e);
