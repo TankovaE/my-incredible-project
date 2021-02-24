@@ -20,6 +20,9 @@ const userMiddleware = require('./middleware/user');
 const csrf = require('csurf');
 const flash = require('connect-flash');
 const keys = require('./keys');
+const errorHandler = require('./middleware/error');
+const fileMiddleware = require('./middleware/file');
+const profileRoutes = require('./routes/profile');
 
 //аналог объекта server
 const app = express();
@@ -61,6 +64,7 @@ app.set('views', 'views');
 //указываем, что папка public является публичной (статичной),
 //в ней мы храним статичные объект, например, картинки или стили css
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
 //нужно для обработки запроса, в том числе получение body запроса
 app.use(express.urlencoded({extended: true}))
@@ -74,6 +78,10 @@ app.use(session({
     saveUninitialized: false,
     store: store,
 }));
+// middleware для обработки загружаемых файлов
+// вызывая метод single говорим, что загружаем 1 файл
+// методу single передаем название поля, куда будет складываться файл
+app.use(fileMiddleware.single('avatar'))
 // для защиты приложения от перехвата сессий мы будем генерировать уникальные ключи для клиента
 // csrf middleware проверяет наличие токена
 // вызываем сразу после session
@@ -106,6 +114,10 @@ app.use('/courses', coursesRoutes)
 app.use('/cart', cartRoutes)
 app.use('/orders', ordersRoutes)
 app.use('/auth', authRouter)
+app.use('/profile', profileRoutes)
+
+// этот хендлер обработки ошибок должен подключаться после всех роутов
+app.use(errorHandler)
 
 //базовый метод который позволяет обрабатывать различные запросы
 //первый параметр - адрес страницы, второй - это handler, который принимает 3 прараметра
