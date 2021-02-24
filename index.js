@@ -23,6 +23,7 @@ const keys = require('./keys');
 const errorHandler = require('./middleware/error');
 const fileMiddleware = require('./middleware/file');
 const profileRoutes = require('./routes/profile');
+const helmet = require('helmet');
 
 //аналог объекта server
 const app = express();
@@ -94,6 +95,8 @@ app.use(csrf());
 // например, если мы сделали редирект при ошибке валидации юзера и хотим показать юзеру уведомление об ошибке,
 // на странице, на которую был сделан редирект
 app.use(flash());
+// helmet длобавляет в ответ на запросы хедеры, которые нужны для защиты страницы
+app.use(helmet())
 
 
 // подключаем свой middleware,
